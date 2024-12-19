@@ -276,5 +276,15 @@
         "source": "smart_contract_assistant",
         "content": "The complex gas-heavy contract has been deployed on the Holesky network at address 0x9B0C37B18FCD3D0727e62fBe912Ff72541B1E0a6. Would you like any other modifications or need assistance with anything else?",
         "metadata": {}
+    },
+    {
+        "id": "1ecdb7d7-dab7-42d7-a86e-a3a59cc39779",
+        "timestamp": "2024-12-19T08:44:46.966948Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "generate a frontend for this in the Hero",
+        "metadata": {
+            "component_id": "Hero1734597317"
+        }
     }
 ]
