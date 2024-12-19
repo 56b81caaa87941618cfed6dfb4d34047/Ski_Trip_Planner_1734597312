@@ -88,5 +88,20 @@
         "source": "web_client",
         "content": "yes",
         "metadata": {}
+    },
+    {
+        "id": "193c063d-6ff5-4b64-ae1d-b4ee16fbf159",
+        "timestamp": "2024-12-19T08:36:48.369619Z",
+        "role": "tool_call",
+        "source": "smart_contract_assistant",
+        "content": null,
+        "metadata": {
+            "id": "call_Oxg5J5Fs6iHKzd3hafU4DYS5",
+            "function": {
+                "arguments": "{\"contract_id\":\"MintingContract1734597312\",\"frontend_description\":\"A component for users to mint tokens.\",\"acknowledgement_message\":\"Okay, I'm deploying the contract...\"}",
+                "name": "DeployAndGenerateFrontend"
+            },
+            "type": "function"
+        }
     }
 ]
