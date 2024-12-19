@@ -799,5 +799,20 @@
         "metadata": {
             "component_id": "Hero1734597317"
         }
+    },
+    {
+        "id": "3ccaefae-47e3-4ede-8d77-31cc070edf29",
+        "timestamp": "2024-12-19T09:50:02.834269Z",
+        "role": "tool_call",
+        "source": "smart_contract_assistant",
+        "content": null,
+        "metadata": {
+            "id": "call_2ss8tWtUCAhEJu4p6Egs42Dn",
+            "function": {
+                "arguments": "{\"contract_id\":\"StakingContract1734597312\",\"description\":\"Modify the staking contract to stake ETH directly.\",\"acknowledgement_message\":\"Okay, I'm modifying the staking contract to support staking ETH directly...\"}",
+                "name": "WriteOrEditSmartContract"
+            },
+            "type": "function"
+        }
     }
 ]
