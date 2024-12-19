@@ -840,5 +840,15 @@
         "source": "smart_contract_assistant",
         "content": "The staking contract has been successfully modified to support staking ETH directly. Would you like to deploy it now?",
         "metadata": {}
+    },
+    {
+        "id": "ab7c06ce-82c5-42d2-8d43-aa051e1a5b4e",
+        "timestamp": "2024-12-19T09:50:54.563909Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "and not apadte the frontend for it as I am saying. the hero",
+        "metadata": {
+            "component_id": "Hero1734597317"
+        }
     }
 ]
