@@ -646,5 +646,20 @@
         "metadata": {
             "component_id": "Hero1734597317"
         }
+    },
+    {
+        "id": "27495292-84f9-4a93-836d-76d3c2f88a80",
+        "timestamp": "2024-12-19T09:44:39.758821Z",
+        "role": "tool_call",
+        "source": "smart_contract_assistant",
+        "content": null,
+        "metadata": {
+            "id": "call_ldSucJXf0xHk7dTLGczMcG48",
+            "function": {
+                "arguments": "{\"contract_id\":\"StakingContract1734597312\",\"description\":\"A staking smart contract where users can stake tokens to earn rewards over time.\",\"acknowledgement_message\":\"Okay, I'm generating the staking contract...\"}",
+                "name": "WriteOrEditSmartContract"
+            },
+            "type": "function"
+        }
     }
 ]
