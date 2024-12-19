@@ -10,10 +10,9 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 contract StakingContract1734597312 is Ownable {
     using SafeERC20 for IERC20;
 
-    IERC20 public stakingToken;
     IERC20 public rewardToken;
 
-    uint256 public rewardRate; // Reward amount per second per token
+    uint256 public rewardRate; // Reward amount per second per wei
     mapping(address => uint256) public stakedBalance;
     mapping(address => uint256) public lastUpdateTime;
     mapping(address => uint256) public rewards;
@@ -25,19 +24,21 @@ contract StakingContract1734597312 is Ownable {
     event RewardsClaimed(address indexed user, uint256 amount);
 
     constructor() Ownable() {
-        // Initialize with placeholder addresses. These should be changed before deployment.
-        stakingToken = IERC20(address(0x1234567890123456789012345678901234567890));
+        // Initialize with placeholder address. This should be changed before deployment.
         rewardToken = IERC20(address(0x0987654321098765432109876543210987654321));
-        rewardRate = 1e15; // 0.001 tokens per second per staked token
+        rewardRate = 1e15; // 0.001 tokens per second per wei staked
     }
 
-    function stake(uint256 amount) external {
-        require(amount > 0, "Cannot stake 0");
+    receive() external payable {
+        stake();
+    }
+
+    function stake() public payable {
+        require(msg.value > 0, "Cannot stake 0");
         updateReward(msg.sender);
-        stakedBalance[msg.sender] += amount;
-        totalStaked += amount;
-        stakingToken.safeTransferFrom(msg.sender, address(this), amount);
-        emit Staked(msg.sender, amount);
+        stakedBalance[msg.sender] += msg.value;
+        totalStaked += msg.value;
+        emit Staked(msg.sender, msg.value);
     }
 
     function unstake(uint256 amount) external {
@@ -46,7 +47,8 @@ contract StakingContract1734597312 is Ownable {
         updateReward(msg.sender);
         stakedBalance[msg.sender] -= amount;
         totalStaked -= amount;
-        stakingToken.safeTransfer(msg.sender, amount);
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "ETH transfer failed");
         emit Unstaked(msg.sender, amount);
     }
 
@@ -81,9 +83,16 @@ contract StakingContract1734597312 is Ownable {
         rewardRate = newRate;
     }
 
-    function withdrawUnusedRewards() external onlyOwner {
-        uint256 balance = rewardToken.balanceOf(address(this));
-        require(balance > 0, "No rewards to withdraw");
-        rewardToken.safeTransfer(owner(), balance);
+    function withdrawAllUnusedFunds() external onlyOwner {
+        uint256 rewardBalance = rewardToken.balanceOf(address(this));
+        if (rewardBalance > 0) {
+            rewardToken.safeTransfer(owner(), rewardBalance);
+        }
+        
+        uint256 ethBalance = address(this).balance - totalStaked;
+        if (ethBalance > 0) {
+            (bool success, ) = owner().call{value: ethBalance}("");
+            require(success, "ETH transfer failed");
+        }
     }
 }
