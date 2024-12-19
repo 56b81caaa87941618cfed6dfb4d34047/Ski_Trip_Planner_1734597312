@@ -80,5 +80,13 @@
         "source": "smart_contract_assistant",
         "content": "The minting contract has been generated successfully. Would you like to deploy it now?",
         "metadata": {}
+    },
+    {
+        "id": "9eca9bd7-3db1-492e-8817-4ebb87598953",
+        "timestamp": "2024-12-19T08:36:46.295766Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "yes",
+        "metadata": {}
     }
 ]
