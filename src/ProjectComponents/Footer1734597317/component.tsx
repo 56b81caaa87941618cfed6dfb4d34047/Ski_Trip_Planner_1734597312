@@ -68,7 +68,7 @@ const MintingTokenComponent: React.FC = () => {
       const contract = new ethers.Contract(contractAddress, abi, signer);
       const amount = ethers.utils.parseEther(mintAmount);
       const estimatedGas = await contract.estimateGas.mint(account, amount);
-      const gasWithBuffer = estimatedGas.mul(120).div(1000);
+      const gasWithBuffer = estimatedGas.mul(120).div(100);
       const tx = await contract.mint(account, amount, { gasLimit: gasWithBuffer });
       await tx.wait();
       await updateBalanceAndSupply();
