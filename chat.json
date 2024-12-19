@@ -14,5 +14,20 @@
         "source": "web_client",
         "content": "generate a minting contract",
         "metadata": {}
+    },
+    {
+        "id": "010474fa-703b-4068-b2a5-21ae0e583961",
+        "timestamp": "2024-12-19T08:36:01.926969Z",
+        "role": "tool_call",
+        "source": "base_assistant",
+        "content": null,
+        "metadata": {
+            "id": "call_708bu8alSliAWN2Klq9OErl5",
+            "function": {
+                "arguments": "{}",
+                "name": "TransferToSmartContractAssistant"
+            },
+            "type": "function"
+        }
     }
 ]
