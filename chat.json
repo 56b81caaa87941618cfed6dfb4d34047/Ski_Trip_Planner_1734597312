@@ -720,5 +720,15 @@
         "source": "smart_contract_assistant",
         "content": "The staking contract has been deployed on the Holesky network at address 0x393B1C0b5f129dc3c1CfdCB63C093802612879A5. Would you like any further assistance or modifications?",
         "metadata": {}
+    },
+    {
+        "id": "72517657-6b8b-43e1-85f9-c7c717aac1a4",
+        "timestamp": "2024-12-19T09:48:05.517740Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "generate a frontend for it in the hero",
+        "metadata": {
+            "component_id": "Hero1734597317"
+        }
     }
 ]
