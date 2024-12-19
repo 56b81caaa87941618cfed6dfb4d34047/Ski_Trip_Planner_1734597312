@@ -10,7 +10,8 @@ const ABI = [
   "function burn(uint256 amount) public",
   "function balanceOf(address account) public view returns (uint256)",
   "function totalSupply() public view returns (uint256)",
-  "function owner() public view returns (address)"
+  "function owner() public view returns (address)",
+  "function MAX_SUPPLY() public view returns (uint256)"
 ];
 
 const MintingContractInteraction: React.FC = () => {
@@ -21,9 +22,11 @@ const MintingContractInteraction: React.FC = () => {
   const [isOwner, setIsOwner] = React.useState<boolean>(false);
   const [tokenBalance, setTokenBalance] = React.useState<string>('');
   const [totalSupply, setTotalSupply] = React.useState<string>('');
+  const [maxSupply, setMaxSupply] = React.useState<string>('');
   const [mintAmount, setMintAmount] = React.useState<string>('');
   const [burnAmount, setBurnAmount] = React.useState<string>('');
   const [result, setResult] = React.useState<string>('');
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const connectWallet = async () => {
     if (typeof window.ethereum !== 'undefined') {
@@ -52,6 +55,7 @@ const MintingContractInteraction: React.FC = () => {
         setUserAddress(address);
         await updateBalanceAndSupply(contract, address);
         await checkOwnership(contract, address);
+        await updateMaxSupply(contract);
       } catch (error) {
         console.error('Failed to connect wallet:', error);
         setResult('Failed to connect wallet. Please try again.');
@@ -82,6 +86,15 @@ const MintingContractInteraction: React.FC = () => {
     }
   };
 
+  const updateMaxSupply = async (contract: ethers.Contract) => {
+    try {
+      const maxSupplyBN = await contract.MAX_SUPPLY();
+      setMaxSupply(ethers.utils.formatUnits(maxSupplyBN, 18));
+    } catch (error) {
+      console.error('Error updating max supply:', error);
+    }
+  };
+
   const executeWithRetry = async (operation: () => Promise<any>) => {
     const MAX_RETRIES = 3;
     for (let i = 0; i < MAX_RETRIES; i++) {
@@ -99,17 +112,25 @@ const MintingContractInteraction: React.FC = () => {
       await connectWallet();
       if (!contract || !signer) return;
     }
+    setIsLoading(true);
     try {
       const amount = ethers.utils.parseUnits(mintAmount, 18);
       const estimatedGas = await executeWithRetry(() => contract.estimateGas.mint(userAddress, amount));
       const gasWithBuffer = estimatedGas.mul(120).div(100);
       const tx = await executeWithRetry(() => contract.mint(userAddress, amount, { gasLimit: gasWithBuffer }));
+      setResult('Minting transaction submitted. Waiting for confirmation...');
       await tx.wait();
       setResult(`Successfully minted ${mintAmount} tokens.`);
       await updateBalanceAndSupply(contract, userAddress);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error minting tokens:', error);
-      setResult('Error minting tokens. Please try again.');
+      if (error.message.includes('Minting would exceed max supply')) {
+        setResult('Error: Minting would exceed max supply. Please enter a smaller amount.');
+      } else {
+        setResult('Error minting tokens. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -118,25 +139,37 @@ const MintingContractInteraction: React.FC = () => {
       await connectWallet();
       if (!contract || !signer) return;
     }
+    setIsLoading(true);
     try {
       const amount = ethers.utils.parseUnits(burnAmount, 18);
       const estimatedGas = await executeWithRetry(() => contract.estimateGas.burn(amount));
       const gasWithBuffer = estimatedGas.mul(120).div(100);
       const tx = await executeWithRetry(() => contract.burn(amount, { gasLimit: gasWithBuffer }));
+      setResult('Burning transaction submitted. Waiting for confirmation...');
       await tx.wait();
       setResult(`Successfully burned ${burnAmount} tokens.`);
       await updateBalanceAndSupply(contract, userAddress);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error burning tokens:', error);
-      setResult('Error burning tokens. Please try again.');
+      if (error.message.includes('burn amount exceeds balance')) {
+        setResult('Error: Burn amount exceeds balance. Please enter a smaller amount.');
+      } else {
+        setResult('Error burning tokens. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const isValidNumber = (value: string) => {
+    return !isNaN(Number(value)) && Number(value) > 0;
   };
 
   return (
     <div className="p-5">
       <h1 className="text-2xl font-bold mb-4">Minting Contract Interaction</h1>
       <div className="mb-4">
-        <button onClick={connectWallet} className="bg-blue-500 text-white p-2 rounded-lg">
+        <button onClick={connectWallet} className="bg-blue-500 text-white p-2 rounded-lg" disabled={isLoading}>
           Connect Wallet
         </button>
         {userAddress && <p className="mt-2">Connected Address: {userAddress}</p>}
@@ -144,6 +177,8 @@ const MintingContractInteraction: React.FC = () => {
       <div className="mb-4">
         <p>Token Balance: {tokenBalance} MTK</p>
         <p>Total Supply: {totalSupply} MTK</p>
+        <p>Max Supply: {maxSupply} MTK</p>
+        <p>Remaining Mintable: {maxSupply && totalSupply ? (Number(maxSupply) - Number(totalSupply)).toFixed(18) : '0'} MTK</p>
       </div>
       {isOwner && (
         <div className="mb-4">
@@ -154,7 +189,11 @@ const MintingContractInteraction: React.FC = () => {
             placeholder="Amount to mint"
             className="border p-2 rounded-lg w-full"
           />
-          <button onClick={mintTokens} className="bg-green-500 text-white p-2 rounded-lg mt-2">
+          <button 
+            onClick={mintTokens} 
+            className="bg-green-500 text-white p-2 rounded-lg mt-2"
+            disabled={isLoading || !isValidNumber(mintAmount)}
+          >
             Mint Tokens
           </button>
         </div>
@@ -167,7 +206,11 @@ const MintingContractInteraction: React.FC = () => {
           placeholder="Amount to burn"
           className="border p-2 rounded-lg w-full"
         />
-        <button onClick={burnTokens} className="bg-red-500 text-white p-2 rounded-lg mt-2">
+        <button 
+          onClick={burnTokens} 
+          className="bg-red-500 text-white p-2 rounded-lg mt-2"
+          disabled={isLoading || !isValidNumber(burnAmount)}
+        >
           Burn Tokens
         </button>
       </div>
@@ -175,6 +218,7 @@ const MintingContractInteraction: React.FC = () => {
         <h2 className="font-bold">Result:</h2>
         <p>{result}</p>
       </div>
+      {isLoading && <div className="mt-4 text-center">Processing transaction... Please wait.</div>}
     </div>
   );
 };
