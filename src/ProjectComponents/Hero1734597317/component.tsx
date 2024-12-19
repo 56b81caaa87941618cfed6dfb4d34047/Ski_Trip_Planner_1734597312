@@ -66,7 +66,7 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
     try {
       const estimatedGas = await contract.estimateGas.performComplexCalculation();
       const gasWithBuffer = estimatedGas.mul(120).div(100);
-      const tx = await contract.performComplexCalculation({ gasLimit: gasWithBuffer });
+      const tx = await contract.performComplexCalculation();
       await tx.wait();
       setResult("Complex calculation performed successfully!");
     } catch (error) {
