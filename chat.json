@@ -585,5 +585,15 @@
         "source": "smart_contract_assistant",
         "content": "The Hero component is already interacting with the complex transaction contract. Please let me know if there are specific changes or additional features you would like to include.",
         "metadata": {}
+    },
+    {
+        "id": "99218342-7d27-434d-8c2c-013ceabb8566",
+        "timestamp": "2024-12-19T09:19:09.375307Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "generate a frontend in the hero for the Complex Gas Heavy Contract Interaction sc",
+        "metadata": {
+            "component_id": "Hero1734597317"
+        }
     }
 ]
