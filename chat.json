@@ -235,5 +235,20 @@
         "source": "web_client",
         "content": "yes",
         "metadata": {}
+    },
+    {
+        "id": "f2c07082-84fa-4992-bf6e-90c29087d826",
+        "timestamp": "2024-12-19T08:43:44.878361Z",
+        "role": "tool_call",
+        "source": "smart_contract_assistant",
+        "content": null,
+        "metadata": {
+            "id": "call_B8xKj4nnnaond3gHTp7RgG5d",
+            "function": {
+                "arguments": "{\"contract_id\":\"ComplexGasHeavyContract1734597312\",\"frontend_description\":\"A component for interacting with the complex gas-heavy contract.\",\"acknowledgement_message\":\"Okay, I'm deploying the contract...\"}",
+                "name": "DeployAndGenerateFrontend"
+            },
+            "type": "function"
+        }
     }
 ]
