@@ -2,11 +2,11 @@
 import React from 'react';
 import { ethers } from 'ethers';
 
-const CONTRACT_ADDRESS = '0x393B1C0b5f129dc3c1CfdCB63C093802612879A5';
+const CONTRACT_ADDRESS = '0xaEe0F2B70662125932034Df60193914E3A680F16';
 const CHAIN_ID = 17000;
 
 const ABI = [
-  "function stake(uint256 amount) external",
+  "function stake() public payable",
   "function unstake(uint256 amount) external",
   "function claimRewards() external",
   "function getStakedBalance(address account) external view returns (uint256)",
@@ -82,9 +82,15 @@ const StakingContractInteraction: React.FC = () => {
     if (!await checkConnection() || !contract) return;
     try {
       const amount = ethers.utils.parseEther(stakeAmount);
-      const estimatedGas = await executeWithRetry(() => contract.estimateGas.stake(amount));
+      const signer = provider!.getSigner();
+      const balance = await signer.getBalance();
+      if (balance.lt(amount)) {
+        setResult("Insufficient ETH balance for staking.");
+        return;
+      }
+      const estimatedGas = await executeWithRetry(() => contract.estimateGas.stake({ value: amount }));
       const gasWithBuffer = estimatedGas.mul(120).div(100);
-      const tx = await executeWithRetry(() => contract.stake(amount, { gasLimit: gasWithBuffer }));
+      const tx = await executeWithRetry(() => contract.stake({ value: amount, gasLimit: gasWithBuffer }));
       await tx.wait();
       setResult("Staking successful!");
       await updateBalances();
@@ -148,7 +154,7 @@ const StakingContractInteraction: React.FC = () => {
   return (
     <div className="bg-gray-100 min-h-screen p-5">
       <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-5">
-        <h1 className="text-2xl font-bold mb-4">Staking Contract Interaction</h1>
+        <h1 className="text-2xl font-bold mb-4">ETH Staking Contract Interaction</h1>
         
         <div className="mb-4">
           <p>Contract Address: {CONTRACT_ADDRESS}</p>
@@ -156,7 +162,7 @@ const StakingContractInteraction: React.FC = () => {
         </div>
 
         <div className="mb-4">
-          <p>Staked Balance: {stakedBalance} tokens</p>
+          <p>Staked Balance: {stakedBalance} ETH</p>
           <p>Pending Rewards: {pendingRewards} tokens</p>
         </div>
 
@@ -166,14 +172,14 @@ const StakingContractInteraction: React.FC = () => {
               type="text"
               value={stakeAmount}
               onChange={(e) => setStakeAmount(e.target.value)}
-              placeholder="Enter amount to stake"
+              placeholder="Enter amount of ETH to stake"
               className="border rounded-lg px-4 py-2 w-full"
             />
             <button
               onClick={stake}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-2"
             >
-              Stake
+              Stake ETH
             </button>
           </div>
 
@@ -182,14 +188,14 @@ const StakingContractInteraction: React.FC = () => {
               type="text"
               value={unstakeAmount}
               onChange={(e) => setUnstakeAmount(e.target.value)}
-              placeholder="Enter amount to unstake"
+              placeholder="Enter amount of ETH to unstake"
               className="border rounded-lg px-4 py-2 w-full"
             />
             <button
               onClick={unstake}
               className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mt-2"
             >
-              Unstake
+              Unstake ETH
             </button>
           </div>
 
