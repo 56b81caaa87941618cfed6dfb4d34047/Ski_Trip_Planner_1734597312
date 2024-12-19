@@ -1,0 +1,23 @@
+{
+    "name": "example",
+    "prefix": "%#PLACEHOLDER",
+    "placeholderMappings": {
+        "Header": [
+            "APPLICATION_NAME"
+        ],
+        "Hero": [
+            "HERO_HEADING_TEXT",
+            "HERO_SUBHEADING_TEXT"
+        ],
+        "Footer": [
+            "APPLICATION_NAME",
+            "FOOTER_TEXT"
+        ]
+    },
+    "placeholders": {
+        "APPLICATION_NAME": "PeakPro",
+        "HERO_HEADING_TEXT": "Conquer the Slopes with Confidence",
+        "HERO_SUBHEADING_TEXT": "Your ultimate companion for planning, tracking, and enhancing your ski adventures",
+        "FOOTER_TEXT": "\u00a9 2023 PeakPro. Carve your path to skiing excellence."
+    }
+}
