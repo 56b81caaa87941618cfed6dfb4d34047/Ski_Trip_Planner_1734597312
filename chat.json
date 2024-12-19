@@ -789,5 +789,15 @@
         "source": "smart_contract_assistant",
         "content": "Currently, the staking contract is designed to work with ERC20 tokens. I'm unable to modify it to stake ETH directly. If you need further assistance with other modifications or issues, please let me know.",
         "metadata": {}
+    },
+    {
+        "id": "4ffdffe9-a9f8-4199-9929-7fc4103b57dd",
+        "timestamp": "2024-12-19T09:49:59.878842Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "modify the .sol file to stake eth directly",
+        "metadata": {
+            "component_id": "Hero1734597317"
+        }
     }
 ]
