@@ -6,7 +6,10 @@ const CONTRACT_ADDRESS = '0x9B0C37B18FCD3D0727e62fBe912Ff72541B1E0a6';
 const CHAIN_ID = 17000;
 
 const ABI = [
+  "function addMultipleUsers((uint256,string,uint256)[] memory _users) external",
   "function performComplexCalculation() external",
+  "function updateAllBalances(uint256 amount) external",
+  "function simulateExternalCall(address[] memory _addresses) external",
   "function processLargeArray(uint256[] memory data) external pure returns (uint256)",
   "function getContractBalance() external view returns (uint256)"
 ];
@@ -16,6 +19,9 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
   const [contract, setContract] = React.useState<ethers.Contract | null>(null);
   const [result, setResult] = React.useState<string>('');
   const [inputArray, setInputArray] = React.useState<string>('');
+  const [users, setUsers] = React.useState<string>('');
+  const [updateAmount, setUpdateAmount] = React.useState<string>('');
+  const [externalAddresses, setExternalAddresses] = React.useState<string>('');
 
   React.useEffect(() => {
     const initProvider = async () => {
@@ -61,12 +67,39 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
     return true;
   };
 
+  const executeWithRetry = async (operation: () => Promise<any>) => {
+    const MAX_RETRIES = 3;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      try {
+        return await operation();
+      } catch (err: any) {
+        if (!err.message.toLowerCase().includes('network') || i === MAX_RETRIES - 1) throw err;
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  };
+
+  const addMultipleUsers = async () => {
+    if (!await checkConnection() || !contract) return;
+    try {
+      const usersData = JSON.parse(users);
+      const estimatedGas = await executeWithRetry(() => contract.estimateGas.addMultipleUsers(usersData));
+      const gasWithBuffer = estimatedGas.mul(120).div(100);
+      const tx = await executeWithRetry(() => contract.addMultipleUsers(usersData, { gasLimit: gasWithBuffer }));
+      await tx.wait();
+      setResult("Users added successfully!");
+    } catch (error) {
+      console.error("Error adding users:", error);
+      setResult("Error adding users. Please check your input and try again.");
+    }
+  };
+
   const performComplexCalculation = async () => {
     if (!await checkConnection() || !contract) return;
     try {
-      const estimatedGas = await contract.estimateGas.performComplexCalculation();
+      const estimatedGas = await executeWithRetry(() => contract.estimateGas.performComplexCalculation());
       const gasWithBuffer = estimatedGas.mul(120).div(100);
-      const tx = await contract.performComplexCalculation();
+      const tx = await executeWithRetry(() => contract.performComplexCalculation({ gasLimit: gasWithBuffer }));
       await tx.wait();
       setResult("Complex calculation performed successfully!");
     } catch (error) {
@@ -75,11 +108,41 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
     }
   };
 
+  const updateAllBalances = async () => {
+    if (!await checkConnection() || !contract) return;
+    try {
+      const amount = ethers.utils.parseEther(updateAmount);
+      const estimatedGas = await executeWithRetry(() => contract.estimateGas.updateAllBalances(amount));
+      const gasWithBuffer = estimatedGas.mul(120).div(100);
+      const tx = await executeWithRetry(() => contract.updateAllBalances(amount, { gasLimit: gasWithBuffer }));
+      await tx.wait();
+      setResult("All balances updated successfully!");
+    } catch (error) {
+      console.error("Error updating balances:", error);
+      setResult("Error updating balances. Please check your input and try again.");
+    }
+  };
+
+  const simulateExternalCall = async () => {
+    if (!await checkConnection() || !contract) return;
+    try {
+      const addresses = externalAddresses.split(',').map(addr => addr.trim());
+      const estimatedGas = await executeWithRetry(() => contract.estimateGas.simulateExternalCall(addresses));
+      const gasWithBuffer = estimatedGas.mul(120).div(100);
+      const tx = await executeWithRetry(() => contract.simulateExternalCall(addresses, { gasLimit: gasWithBuffer }));
+      await tx.wait();
+      setResult("External calls simulated successfully!");
+    } catch (error) {
+      console.error("Error simulating external calls:", error);
+      setResult("Error simulating external calls. Please check your input and try again.");
+    }
+  };
+
   const processLargeArray = async () => {
     if (!await checkConnection() || !contract) return;
     try {
       const arrayData = inputArray.split(',').map(num => parseInt(num.trim()));
-      const result = await contract.processLargeArray(arrayData);
+      const result = await executeWithRetry(() => contract.processLargeArray(arrayData));
       setResult(`Process Large Array Result: ${result.toString()}`);
     } catch (error) {
       console.error("Error processing large array:", error);
@@ -90,7 +153,7 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
   const getContractBalance = async () => {
     if (!await checkConnection() || !contract) return;
     try {
-      const balance = await contract.getContractBalance();
+      const balance = await executeWithRetry(() => contract.getContractBalance());
       setResult(`Contract Balance: ${ethers.utils.formatEther(balance)} ETH`);
     } catch (error) {
       console.error("Error getting contract balance:", error);
@@ -109,12 +172,59 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
         </div>
 
         <div className="space-y-4">
+          <div>
+            <textarea
+              value={users}
+              onChange={(e) => setUsers(e.target.value)}
+              placeholder="Enter users data as JSON array"
+              className="border rounded-lg px-4 py-2 w-full h-24"
+            />
+            <button
+              onClick={addMultipleUsers}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-2"
+            >
+              Add Multiple Users (Admin)
+            </button>
+          </div>
+
           <button
             onClick={performComplexCalculation}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
           >
             Perform Complex Calculation
           </button>
+
+          <div>
+            <input
+              type="text"
+              value={updateAmount}
+              onChange={(e) => setUpdateAmount(e.target.value)}
+              placeholder="Enter amount to update balances"
+              className="border rounded-lg px-4 py-2 w-full"
+            />
+            <button
+              onClick={updateAllBalances}
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mt-2"
+            >
+              Update All Balances (Admin)
+            </button>
+          </div>
+
+          <div>
+            <input
+              type="text"
+              value={externalAddresses}
+              onChange={(e) => setExternalAddresses(e.target.value)}
+              placeholder="Enter addresses separated by commas"
+              className="border rounded-lg px-4 py-2 w-full"
+            />
+            <button
+              onClick={simulateExternalCall}
+              className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 mt-2"
+            >
+              Simulate External Call
+            </button>
+          </div>
 
           <div>
             <input
@@ -126,7 +236,7 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
             />
             <button
               onClick={processLargeArray}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mt-2"
+              className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 mt-2"
             >
               Process Large Array
             </button>
@@ -134,7 +244,7 @@ const ComplexGasHeavyContractInteraction: React.FC = () => {
 
           <button
             onClick={getContractBalance}
-            className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
+            className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
           >
             Get Contract Balance
           </button>
