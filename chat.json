@@ -227,5 +227,13 @@
         "source": "smart_contract_assistant",
         "content": "The complex gas-heavy contract has been successfully generated. Would you like to deploy it now?",
         "metadata": {}
+    },
+    {
+        "id": "ecc514c9-9a8b-4c02-8939-85f8bc126b51",
+        "timestamp": "2024-12-19T08:43:42.674768Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "yes",
+        "metadata": {}
     }
 ]
