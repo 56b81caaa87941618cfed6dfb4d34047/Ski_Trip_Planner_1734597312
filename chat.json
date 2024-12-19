@@ -186,5 +186,20 @@
         "source": "web_client",
         "content": "generate a contract that is complex and perhaps generates problems with the gas",
         "metadata": {}
+    },
+    {
+        "id": "9116f190-dfec-4db6-a07d-8a7fce8d40fd",
+        "timestamp": "2024-12-19T08:42:19.292356Z",
+        "role": "tool_call",
+        "source": "smart_contract_assistant",
+        "content": null,
+        "metadata": {
+            "id": "call_15n5RrGE3aFJ4H7i19RmXvoB",
+            "function": {
+                "arguments": "{\"contract_id\":\"ComplexGasHeavyContract1734597312\",\"description\":\"A complex smart contract with functions that could potentially lead to high gas costs.\",\"acknowledgement_message\":\"Okay, I'm generating a complex contract that might have high gas costs...\"}",
+                "name": "WriteOrEditSmartContract"
+            },
+            "type": "function"
+        }
     }
 ]
