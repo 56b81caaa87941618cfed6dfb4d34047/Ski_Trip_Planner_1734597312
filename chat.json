@@ -771,5 +771,23 @@
         "source": "smart_contract_assistant",
         "content": "The Hero component has been successfully updated to interact with the staking contract at 0x393B1C0b5f129dc3c1CfdCB63C093802612879A5 on the Holesky network. Would you like to make any further adjustments or need assistance with anything else?",
         "metadata": {}
+    },
+    {
+        "id": "349def1e-28b8-4929-9eef-def90b722ef1",
+        "timestamp": "2024-12-19T09:49:24.609224Z",
+        "role": "user",
+        "source": "web_client",
+        "content": "i has to stake holesky eht",
+        "metadata": {
+            "component_id": "Hero1734597317"
+        }
+    },
+    {
+        "id": "fc86d064-7278-4bd2-b1ab-f83551757557",
+        "timestamp": "2024-12-19T09:49:29.527373Z",
+        "role": "assistant",
+        "source": "smart_contract_assistant",
+        "content": "Currently, the staking contract is designed to work with ERC20 tokens. I'm unable to modify it to stake ETH directly. If you need further assistance with other modifications or issues, please let me know.",
+        "metadata": {}
     }
 ]
